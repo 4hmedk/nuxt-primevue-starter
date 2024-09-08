@@ -1,4 +1,5 @@
 <template>
+  <!-- hero section -->
   <div class="bg-background">
     <div
       class="container max-w-screen-lg mx-auto grid grid-cols-12 surface-section text-800"
@@ -41,6 +42,14 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+// use ladinglayout template
+import { ref } from "vue";
+import Button from "primevue/button";
+
+definePageMeta({
+  layout: "landing",
+});
+</script>
 
 <style scoped></style>

@@ -10,5 +10,9 @@ export default defineNuxtConfig({
     importPT: { as: 'Aura', from: '~/presets/aura' }     //import and apply preset
 },
 css: ['~/assets/css/main.css'],
+colorMode: {
+  preference: 'system', // default value of $colorMode.preference
+  fallback: 'dark',
+  classSuffix: '',},
 
 })

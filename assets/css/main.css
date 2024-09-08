@@ -1,4 +1,6 @@
 
+@import 'primeicons/primeicons.css';
+
 /* Primary and Surface Palettes */
 :root {
   
@@ -50,7 +52,7 @@
     
 }
 
-.dark-mode {
+.dark {
     --p-primary-color: var(--p-primary-400);
     --p-primary-contrast-color: var(--p-surface-900);
     --p-primary-hover-color: var(--p-primary-300);
@@ -77,12 +79,3 @@
     --cta-text: 255, 255, 255;
     background: rgba(var(--background));
 }
-
-/* 
- * Dark Mode
- * Change the .p-dark to match the darkMode in tailwind.config.
- * For example; 
- *  darkMode: ['selector', '[class*="app-dark"]'] 
- *  should match;
- * :root.app-dark
-*/
