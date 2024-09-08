@@ -15,8 +15,12 @@
       </div>
     </template>
     <template #end>
-      <div class="card mr-3 flex justify-center">
-        <ToggleSwitch v-model="darkMode" />
+      <div class="card mr-2 flex justify-center">
+        <template>
+          <div class="card flex justify-center">
+            <DarkmodeToggle/>
+          </div>
+        </template>
       </div>
       <NuxtLink to="/auth/login"><Button label="Go to app" /></NuxtLink>
     </template>
@@ -24,26 +28,7 @@
 </template>
 
 <script setup>
-import ToggleSwitch from "primevue/toggleswitch";
-import { ref, watch } from "vue";
-import Toolbar from "primevue/toolbar";
 
-const colorMode = useColorMode();
-const darkMode = ref(false);
-
-onMounted(() => {
-  console.log(colorMode.preference);
-  if (colorMode.preference != "system") {
-    // darkMode.value = colorMode.preference === "dark";
-  }
-});
-
-watch(
-  () => darkMode.value,
-  (newValue, oldValue) => {
-    colorMode.preference = newValue ? "dark" : "light";
-  }
-);
 
 const items = ref([
   {

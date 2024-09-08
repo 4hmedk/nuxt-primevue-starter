@@ -61,10 +61,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import  InputText from "primevue/inputtext";
-import Button from "primevue/button";
-
 const username = ref("DrAhmed");
 const email = ref("ahmed@example.com");
 const subscriptionPlan = ref("Premium");
