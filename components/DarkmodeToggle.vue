@@ -5,7 +5,7 @@
     offLabel=" "
     onIcon="pi pi-moon"
     offIcon="pi pi-sun"
-    class="rounded-full border-none"
+    class="rounded-full border-none !bg-transparent before:!bg-transparent"
   />
 </template>
 

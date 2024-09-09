@@ -71,12 +71,12 @@ const handleSocialLogin = async (provider) => {
 <style scoped>
 /* Tailwind + PrimeVue styling */
 .p-button-google {
-  @apply bg-red-600 hover:bg-red-700 text-copy;
+  @apply bg-red-600 hover:bg-red-700;
 }
 .p-button-apple {
-  @apply bg-black hover:bg-gray-900 text-cta;
+  @apply bg-black hover:bg-gray-900;
 }
 .p-button-facebook {
-  @apply bg-blue-600 hover:bg-blue-700 text-cta;
+  @apply bg-blue-600 hover:bg-blue-700;
 }
 </style>
