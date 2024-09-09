@@ -13,7 +13,7 @@
       <!-- Google Login -->
       <Button
         class="w-full p-button-google border-none"
-        @click="login('google')"
+        @click="handleSocialLogin('google')"
       >
         <Icon class="iconify text-white" name="ph:google-logo"></Icon>
         <span class="text-white">Login with Google</span>
@@ -23,7 +23,7 @@
       <Button
         label="Login with Apple"
         class="w-full p-button-apple border-none"
-        @click="login('apple')"
+        @click="handleSocialLogin('apple')"
       >
         <Icon class="iconify text-white" name="ph:apple-logo"></Icon>
         <span class="text-white">Login with Apple</span>
@@ -33,7 +33,7 @@
       <Button
         label="Login with Facebook"
         class="w-full p-button-facebook border-none"
-        @click="login('facebook')"
+        @click="handleSocialLogin('facebook')"
       >
         <Icon class="iconify text-white" name="ph:facebook-logo"></Icon>
         <span class="text-white">Login with Facebook</span>
@@ -43,13 +43,29 @@
 </template>
 
 <script setup>
-import Button from "primevue/button";
+const supabase = useSupabaseClient();
+const email = ref("");
+const password = ref("");
 
 async function login(provider) {
   // Perform login using the selected provider
   //redirect to the home page for now
   await navigateTo({ path: "/app/home" });
 }
+
+const handleSocialLogin = async (provider) => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/redirect`,
+      },
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error(`Error logging in with ${provider}:`, error.message);
+  }
+};
 </script>
 
 <style scoped>

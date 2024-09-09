@@ -2,7 +2,9 @@
   <!-- header -->
   <Toolbar class="border-none container mx-auto text-copy">
     <template #start>
-      <LogoComponent />
+      <nuxt-link to="/">
+        <LogoComponent />
+      </nuxt-link>
       <div class="ml-2">
         <NuxtLink
           v-for="tab in items"
@@ -18,18 +20,16 @@
       <div class="card mr-2 flex justify-center">
         <template>
           <div class="card flex justify-center">
-            <DarkmodeToggle/>
+            <DarkmodeToggle />
           </div>
         </template>
       </div>
-      <NuxtLink to="/auth/login"><Button label="Go to app" /></NuxtLink>
+      <NuxtLink to="/app/home"><Button label="Go to app" /></NuxtLink>
     </template>
   </Toolbar>
 </template>
 
 <script setup>
-
-
 const items = ref([
   {
     label: "Home",

@@ -2,7 +2,9 @@
   <!-- header -->
   <Toolbar class="border-none container mx-auto text-copy">
     <template #start>
-      <LogoComponent />
+      <nuxt-link to="/">
+        <LogoComponent />
+      </nuxt-link>
     </template>
     <template #end>
       <DarkmodeToggle />
