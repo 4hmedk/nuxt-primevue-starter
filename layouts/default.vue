@@ -23,12 +23,12 @@
             class="relative overflow-hidden w-full border-0 bg-transparent flex items-start p-2 pl-4 text-copy"
           >
             <Avatar
-              image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+              :image="data.user_metadata.avatar_url"
               class="mr-2"
               shape="circle"
             />
             <span class="inline-flex flex-col items-start">
-              <span class="font-bold">Amy Elsner</span>
+              <span class="font-bold">{{ data.user_metadata.full_name }}</span>
               <span class="text-sm">Free Plan</span>
             </span>
           </div>
@@ -40,6 +40,10 @@
 </template>
 
 <script setup>
+const data = reactive({
+  user_metadata: null,
+});
+const userStore = useUserStore();
 const menu = ref();
 const items = ref([
   {
@@ -54,10 +58,11 @@ const items = ref([
       {
         label: "Logout",
         icon: "pi pi-sign-out",
+
         command: async () => {
           //signout
-          const { handleLogout } = useSupabase();
-          await handleLogout();
+          await userStore.handleLogout();
+          navigateTo("/auth/login");
         },
       },
     ],
@@ -67,6 +72,8 @@ const items = ref([
 const toggle = (event) => {
   menu.value.toggle(event);
 };
+
+data.user_metadata = userStore.user?.user_metadata;
 </script>
 
 <style scoped></style>

@@ -9,12 +9,13 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxtjs/supabase',
     '@pinia/nuxt',
+    '@vee-validate/nuxt',
   ],
   primevue: {
     options: {
         unstyled: true
     },
-    importPT: { as: 'Aura', from: '~/components/presets/aura' }     //import and apply preset
+    importPT: { as: 'Aura', from: '~/presets/aura' }     //import and apply preset
 },
 css: ['~/assets/css/main.css'],
 colorMode: {
@@ -49,4 +50,15 @@ supabase: {
 alias: {
   pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs"
 },
+// veeValidate: {
+//   // disable or enable auto imports
+//   autoImports: true,
+//   // Use different names for components
+//   componentNames: {
+//     Form: 'VeeForm',
+//     Field: 'VeeField',
+//     FieldArray: 'VeeFieldArray',
+//     ErrorMessage: 'VeeErrorMessage',
+//   },
+// },
 })

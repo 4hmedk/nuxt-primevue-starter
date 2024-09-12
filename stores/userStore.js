@@ -3,12 +3,11 @@ export const useUserStore = defineStore("supabase", {
     user: null,
     loading: false,
     error: null,
-    app_name: process.env.APP_NAME,
+    app_name: process.env.APP_NAME || "starter",
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.user,
-    // userData: (state) => state.user?.userData,
   },
 
   actions: {
@@ -100,7 +99,7 @@ export const useUserStore = defineStore("supabase", {
 
     async getUserData() {
       const supabase = useSupabaseClient();
-
+      console.log(this.app_name);
       try {
         const { data, error: authError } = await supabase.auth.getUser();
         if (authError) throw authError;
@@ -139,6 +138,7 @@ export const useUserStore = defineStore("supabase", {
       } catch (e) {
         console.log(e.message);
         this.error = e.message;
+        return null;
       }
     },
   },

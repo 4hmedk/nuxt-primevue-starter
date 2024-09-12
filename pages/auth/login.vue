@@ -43,11 +43,14 @@
 </template>
 
 <script setup>
-const supabase = useSupabaseClient();
+definePageMeta({
+  layout: "landing",
+});
+
 const email = ref("");
 const password = ref("");
 
-const { handleSocialLogin } = useSupabase();
+const { handleSocialLogin } = useUserStore();
 </script>
 
 <style scoped>
