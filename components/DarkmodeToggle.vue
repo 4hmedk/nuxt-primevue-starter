@@ -14,9 +14,7 @@ const colorMode = useColorMode();
 const darkMode = ref(false);
 
 onMounted(() => {
-  console.log(colorMode.preference);
   if (colorMode.preference != "system") {
-    console.log("not system");
     darkMode.value = colorMode.preference === "dark";
   }
 });

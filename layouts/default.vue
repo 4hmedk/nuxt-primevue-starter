@@ -17,7 +17,23 @@
         aria-controls="overlay_menu"
         severity="secondary"
       />
-      <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+      <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
+        <template #start>
+          <div
+            class="relative overflow-hidden w-full border-0 bg-transparent flex items-start p-2 pl-4 text-copy"
+          >
+            <Avatar
+              image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+              class="mr-2"
+              shape="circle"
+            />
+            <span class="inline-flex flex-col items-start">
+              <span class="font-bold">Amy Elsner</span>
+              <span class="text-sm">Free Plan</span>
+            </span>
+          </div>
+        </template>
+      </Menu>
     </template>
   </Toolbar>
   <slot></slot>
@@ -27,15 +43,22 @@
 const menu = ref();
 const items = ref([
   {
-    label: "Options",
     items: [
       {
-        label: "Refresh",
-        icon: "pi pi-refresh",
+        label: "Settings",
+        icon: "pi pi-cog",
+        command: () => {
+          navigateTo("/app/profile");
+        },
       },
       {
-        label: "Export",
-        icon: "pi pi-upload",
+        label: "Logout",
+        icon: "pi pi-sign-out",
+        command: async () => {
+          //signout
+          const { handleLogout } = useSupabase();
+          await handleLogout();
+        },
       },
     ],
   },

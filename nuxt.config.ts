@@ -8,12 +8,13 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxtjs/color-mode',
     '@nuxtjs/supabase',
+    '@pinia/nuxt',
   ],
   primevue: {
     options: {
         unstyled: true
     },
-    importPT: { as: 'Aura', from: '~/presets/aura' }     //import and apply preset
+    importPT: { as: 'Aura', from: '~/assets/presets/aura' }     //import and apply preset
 },
 css: ['~/assets/css/main.css'],
 colorMode: {
@@ -25,8 +26,8 @@ supabase: {
   redirectOptions: {
     login: '/auth/login',
     callback: '/auth/redirect',
-    exclude: ['/'],
-    include: ['/app/**'],
+    exclude: ['/**'],
+    // include: ['/app/**'],
     cookieRedirect: true,
     
   },
@@ -43,5 +44,9 @@ supabase: {
       autoRefreshToken: true,
     },
   },
+  
+},
+alias: {
+  pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs"
 },
 })

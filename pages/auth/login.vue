@@ -47,25 +47,7 @@ const supabase = useSupabaseClient();
 const email = ref("");
 const password = ref("");
 
-async function login(provider) {
-  // Perform login using the selected provider
-  //redirect to the home page for now
-  await navigateTo({ path: "/app/home" });
-}
-
-const handleSocialLogin = async (provider) => {
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/redirect`,
-      },
-    });
-    if (error) throw error;
-  } catch (error) {
-    console.error(`Error logging in with ${provider}:`, error.message);
-  }
-};
+const { handleSocialLogin } = useSupabase();
 </script>
 
 <style scoped>
