@@ -3,11 +3,12 @@ export const useUserStore = defineStore("supabase", {
     user: null,
     loading: false,
     error: null,
+    app_name: process.env.APP_NAME,
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.user,
-    userData: (state) => state.user?.userData,
+    // userData: (state) => state.user?.userData,
   },
 
   actions: {
@@ -106,7 +107,7 @@ export const useUserStore = defineStore("supabase", {
         this.user = data.user;
         console.log(this.user.id);
         const { data: userData, e } = await supabase
-          .from("starter-userdata")
+          .from(`${this.app_name}-userdata`)
           .select("*")
           .eq("id", this.user.id);
         if (e && e.code !== "PGRST116") {
@@ -126,7 +127,7 @@ export const useUserStore = defineStore("supabase", {
             // Add any other initial metadata fields you want
           };
           const { data: insertedData, error: insertError } = await supabase
-            .from("starter-userdata")
+            .from(`${this.app_name}-userdata`)
             .insert(newUserData);
           if (insertError) {
             console.error("Error creating new user metadata:", insertError);
@@ -137,7 +138,7 @@ export const useUserStore = defineStore("supabase", {
         }
       } catch (e) {
         console.log(e.message);
-        this.error = error.message;
+        this.error = e.message;
       }
     },
   },
