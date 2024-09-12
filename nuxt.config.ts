@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     options: {
         unstyled: true
     },
-    importPT: { as: 'Aura', from: '~/assets/presets/aura' }     //import and apply preset
+    importPT: { as: 'Aura', from: '~/components/presets/aura' }     //import and apply preset
 },
 css: ['~/assets/css/main.css'],
 colorMode: {
