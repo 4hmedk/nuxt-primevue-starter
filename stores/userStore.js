@@ -151,10 +151,11 @@ export const useUserStore = defineStore("supabase", {
       try {
         const { error: authError } = await supabase
           .from(`${this.app_name}-userdata`)
-          .update({ tags: updatedTags })
+          .update({ tags: updatedTags, signup_progress: newSignupProgress })
           .eq("id", this.user.id);
         if (authError) throw authError;
         this.user.userData.tags = updatedTags;
+        this.user.userData.signup_progress = newSignupProgress;
         return this.user;
       } catch (e) {
         console.log(e.message);

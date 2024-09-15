@@ -85,7 +85,6 @@ const emit = defineEmits(["next"]);
 
 const onSubmit = async (values) => {
   console.log(values);
-  await userStore.updateUserData({ newtags: values });
-  emit("next");
+  emit("next", values);
 };
 </script>

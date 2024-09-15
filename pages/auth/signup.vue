@@ -1,47 +1,72 @@
 <template>
-  <div class="container max-w-screen-lg mx-auto p-4">
+  <div class="p-4">
     <!-- <component :is="SignupNameSlide" /> -->
-    <Carousel
-      :value="slides"
-      :numVisible="1"
-      :numScroll="1"
-      :circular="false"
-      @page-change="onPageChange"
-      class="w-full"
+    <Card
+      class="mx-auto w-full max-w-screen-sm md:mt-20 border border-border rounded-lg shadow-md"
     >
-      <template #item="slotProps">
-        <div class="w-full">
-          <Card
-            class="mx-auto w-full max-w-screen-sm border border-border p-4 rounded-lg shadow-md"
+      <template #content>
+        <div class="relative overflow-hidden w-full">
+          <div
+            class="flex transition-transform duration-300 ease-in-out"
+            :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
           >
-            <template #content>
-              {{ slotProps.data.id }}
+            <div
+              v-for="(slide, index) in slides"
+              :key="index"
+              class="w-full p-4 flex-shrink-0"
+            >
               <component
-                :is="slotProps.data.component"
+                :is="slide.component"
                 @next="nextSlide"
                 @prev="prevSlide"
               />
-            </template>
-          </Card>
+            </div>
+          </div>
         </div>
       </template>
-    </Carousel>
+    </Card>
   </div>
 </template>
 
 <script setup>
 import { SignupNameSlide, SignupNamePhone } from "#components";
+const toast = useToast();
 const slides = ref([
-  { id: 0, component: SignupNameSlide },
-  { id: 1, component: SignupNamePhone },
-  { id: 2, component: SignupNameSlide },
+  { component: SignupNameSlide },
+  { component: SignupNamePhone },
 ]);
 
 const currentSlide = ref(0);
 
-const nextSlide = () => {
+//get user signup progress
+const userStore = useUserStore();
+const user = await userStore.getUserData();
+const current_progress = user.userData.signup_progress;
+
+currentSlide.value =
+  current_progress < slides.value.length ? current_progress : 0;
+
+const nextSlide = async (values) => {
+  console.log("next");
+  const success = await userStore.updateUserData({
+    newtags: values,
+    newSignupProgress: currentSlide.value + 1,
+  });
+
+  if (!success) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail:
+        "Details could not be updated, please check your connection and try again",
+      life: 5000,
+    });
+  }
+
   if (currentSlide.value < slides.value.length - 1) {
     currentSlide.value++;
+  } else {
+    navigateTo("/app/home");
   }
 };
 
@@ -51,7 +76,7 @@ const prevSlide = () => {
   }
 };
 
-const onPageChange = (event) => {
-  currentSlide.value = event.page;
-};
+definePageMeta({
+  layout: "minimal",
+});
 </script>

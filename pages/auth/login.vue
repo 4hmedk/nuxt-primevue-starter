@@ -44,7 +44,7 @@
 
 <script setup>
 definePageMeta({
-  layout: "landing",
+  layout: "minimal",
 });
 
 const email = ref("");

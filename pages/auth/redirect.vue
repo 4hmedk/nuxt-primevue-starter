@@ -1,5 +1,5 @@
 <template>
-  <div>you are being redirected</div>
+  <div class="text-copy">you are being redirected</div>
 </template>
 
 <script setup>
@@ -26,5 +26,9 @@ onMounted(async () => {
     console.error("Error confirming session:", error.message);
     navigateTo("/auth/login");
   }
+});
+
+definePageMeta({
+  layout: "minimal",
 });
 </script>

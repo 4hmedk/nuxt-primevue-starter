@@ -2,65 +2,56 @@
 <template>
   <div>
     <h2 class="text-2xl mb-4">Confirm your phone number</h2>
-    <Form
-      @submit="onSubmit"
-      :initial-values="initialValues"
-      :validation-schema="schema"
-      v-slot="{ errors }"
-    >
-      <div class="space-y-4">
+    <div class="space-y-4">
+      <Form
+        v-if="!phoneVerified"
+        @submit="verifyPhone"
+        :validation-schema="phoneSchema"
+        v-slot="{ errors }"
+      >
         <div>
-          <label for="name" class="block text-sm font-medium">Name</label>
-          <Field name="name" v-slot="{ field }">
+          <label for="phone" class="block text-sm font-medium"
+            >Phone Number</label
+          >
+          <Field name="phone" v-slot="{ field }">
             <InputText
               v-bind="field"
-              id="name"
+              id="phone"
               class="mt-1 block w-full"
-              :invalid="errors.name"
+              :class="{ 'p-invalid': errors.phone }"
+              placeholder="+1234567890"
             />
           </Field>
-          <small class="text-red-500">{{ errors.name }}</small>
+          <small class="p-error">{{ errors.phone }}</small>
         </div>
+        <Button type="submit" label="Send OTP" class="w-full mt-4" />
+      </Form>
+
+      <Form
+        v-else
+        @submit="verifyOTP"
+        :validation-schema="otpSchema"
+        v-slot="{ errors }"
+      >
         <div>
-          <label for="email" class="block text-sm font-medium">Email</label>
-          <InputText
-            id="email"
-            class="mt-1 block w-full"
-            v-model="user.email"
-            :readonly="true"
-            :disabled="true"
-          />
-        </div>
-        <div class="flex items-center">
-          <Field
-            name="terms"
-            type="checkbox"
-            v-slot="{ field }"
-            :value="true"
-            :unchecked-value="false"
+          <label for="otp" class="block text-sm font-medium"
+            >One-Time Password</label
           >
-            <!-- primevue checkbox does not work with vee-validate -->
-            <input
-              type="checkbox"
-              name="terms"
+          <Field name="otp" v-slot="{ field }">
+            <InputOtp
+              id="otp"
+              class="mt-1 block w-full"
               v-bind="field"
-              :value="true"
-              class="w-4 h-4 text-primary-600 bg-surface-100 border-surface-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-surface-800 focus:ring-2 dark:bg-surface-700 dark:border-surface-600"
+              :invalid="errors.otp"
+              integerOnly
+              :length="6"
             />
           </Field>
-          <label for="terms" class="ml-2 block text-sm">
-            I agree to the
-            <a href="#" class="text-blue-600 hover:underline"
-              >Terms and Conditions</a
-            >
-          </label>
+          <small class="p-error">{{ errors.otp }}</small>
         </div>
-        <small class="p-error">{{ errors.terms }}</small>
-        <div class="w-full">
-          <Button type="submit" label="Next" class="w-full mt-4" />
-        </div>
-      </div>
-    </Form>
+        <Button type="submit" label="Verify OTP" class="w-full mt-4" />
+      </Form>
+    </div>
   </div>
 </template>
 
@@ -69,23 +60,49 @@ import * as Yup from "yup";
 import InputText from "primevue/inputtext";
 const userStore = useUserStore();
 const user = await userStore.getUserData();
+const toast = useToast();
 
-const schema = Yup.object({
-  name: Yup.string().required("Name is required"),
-  // email: Yup.string().email("Invalid email").required("Email is required"),
-  terms: Yup.bool()
-    .required("Please read and accept the terms and conditions")
-    .oneOf([true], "Please read and accept the terms and conditions"),
+const phoneVerified = ref(false);
+const phonenumber = ref(null);
+
+const phoneSchema = Yup.object({
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"),
 });
-const initialValues = {
-  name: user.user_metadata.full_name,
-  terms: true,
+
+const otpSchema = Yup.object({
+  otp: Yup.string().required("OTP is required"),
+  // .matches(/^[0-9]{6}$/, "OTP must be 6 digits"),
+});
+
+const verifyPhone = (values) => {
+  console.log("Sending OTP to:", values.phone);
+  // Here you would typically make an API call to send the OTP
+  // For this example, we'll just simulate it
+  phoneVerified.value = true;
+  phonenumber.value = values.phone;
+
+  toast.add({
+    severity: "info",
+    summary: "OTP sent",
+    detail: `OTP has been sent to ${values.phone}`,
+    life: 3000,
+  });
 };
 const emit = defineEmits(["next"]);
 
-const onSubmit = async (values) => {
-  console.log(values);
-  await userStore.updateUserData({ newtags: values });
-  emit("next");
+const verifyOTP = async (values) => {
+  console.log("Verifying OTP:", values.otp);
+  // Here you would typically make an API call to verify the OTP
+  // For this example, we'll just simulate a successful verification
+  toast.add({
+    severity: "success",
+    summary: "OTP verified",
+    detail: `Your phone number has been verified.`,
+    life: 3000,
+  });
+
+  emit("next", { phone: phonenumber.value });
 };
 </script>
