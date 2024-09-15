@@ -1,17 +1,68 @@
 <template>
   <div>
+    <!-- app menu -->
+    <Drawer v-model:visible="drawerVisible">
+      <template #container="{ closeCallback }">
+        <div class="flex flex-col h-full bg-background">
+          <div class="flex items-center justify-between px-6 pt-4 shrink-0">
+            <span class="inline-flex items-center gap-2">
+              <LogoComponent />
+            </span>
+            <span>
+              <Button
+                type="button"
+                @click="closeCallback"
+                icon="pi pi-times"
+                rounded
+                outlined
+                class="*:text-copy !border-border"
+              ></Button>
+            </span>
+          </div>
+          <div class="overflow-y-auto my-auto">
+            <Menu :model="navItems" pt:root:class="bg-transparent">
+              <template #item="{ item, props }">
+                <router-link
+                  v-if="item.route"
+                  :to="item.route"
+                  active-class="text-primary"
+                >
+                  <!-- <span :class="item.icon" /> -->
+                  <span class="ml-5 text-lg">{{ item.label }}</span>
+                </router-link>
+              </template>
+            </Menu>
+          </div>
+          <div class="mt-auto p-4">
+            <NuxtLink to="/app/home">
+              <Button label="Go to app" class="m-2 *:text-cta" />
+            </NuxtLink>
+          </div>
+        </div>
+      </template>
+    </Drawer>
+
     <!-- header -->
-    <header class="w-screen sticky top-0">
+    <header
+      class="w-screen sticky top-0 bg-background/70 backdrop-blur-md border-b-[0.5px] border-border z-10"
+    >
       <Toolbar
-        class="border-none max-w-screen-lg mx-auto text-copy !bg-background"
+        class="border-none max-w-screen-lg mx-auto text-copy !bg-transparent"
       >
         <template #start>
+          <Button
+            icon="pi pi-bars"
+            @click="drawerVisible = true"
+            class="block md:hidden mr-2 *:text-copy !border-border"
+            outlined
+          />
+
           <nuxt-link to="/">
             <LogoComponent />
           </nuxt-link>
         </template>
         <template #center>
-          <div class="flex flex-row">
+          <div class="flex-row hidden md:flex">
             <NuxtLink
               v-for="tab in navItems"
               :key="tab.label"
@@ -74,6 +125,8 @@
 <script setup>
 import Button from "primevue/button";
 
+const drawerVisible = ref(false);
+
 const navItems = [
   {
     label: "Home",
@@ -81,7 +134,7 @@ const navItems = [
   },
   {
     label: "Pricing",
-    route: "/about",
+    route: "/pricing",
   },
   {
     label: "Contact",

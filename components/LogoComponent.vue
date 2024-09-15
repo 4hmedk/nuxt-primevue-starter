@@ -1,5 +1,5 @@
 <template>
-  <p class="text-3xl font-bold text-copy">{{ app_title }}</p>
+  <p class="text-3xl font-bold text-copy">Starter</p>
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
   <!-- hero section -->
-  <div class="bg-background">
+  <div class="" v-for="i in 3" :key="i">
     <div
       class="container max-w-screen-lg mx-auto grid grid-cols-12 surface-section text-800"
     >
