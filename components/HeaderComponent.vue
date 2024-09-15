@@ -1,18 +1,20 @@
 <template>
   <!-- header -->
-  <Toolbar class="border-none container mx-auto text-copy !bg-background">
+  <Toolbar class="border-none max-w-screen-lg mx-auto text-copy !bg-background">
     <template #start>
       <nuxt-link to="/">
         <LogoComponent />
       </nuxt-link>
-      <div class="ml-2">
+    </template>
+    <template #center>
+      <div class="flex flex-row">
         <NuxtLink
-          v-for="tab in items"
+          v-for="tab in navItems"
           :key="tab.label"
           :to="tab.route"
           active-class="text-primary"
         >
-          <Button :label="tab.label" text plain class="text-cta" />
+          <Button :label="tab.label" text plain class="!text-inherit" />
         </NuxtLink>
       </div>
     </template>
@@ -24,13 +26,15 @@
           </div>
         </template>
       </div>
-      <NuxtLink to="/app/home"><Button label="Go to app" /></NuxtLink>
+      <NuxtLink to="/app/home"
+        ><Button label="Go to app" class="*:text-cta"
+      /></NuxtLink>
     </template>
   </Toolbar>
 </template>
 
 <script setup>
-const items = ref([
+const navItems = [
   {
     label: "Home",
     route: "/",
@@ -43,12 +47,5 @@ const items = ref([
     label: "Contact",
     route: "/contact",
   },
-]);
+];
 </script>
-
-<style>
-.p-toggleswitch-slider,
-.p-toggleswitch-input {
-  @apply bg-red-50;
-}
-</style>

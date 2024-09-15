@@ -97,9 +97,12 @@ export const useUserStore = defineStore("supabase", {
       }
     },
 
-    async getUserData() {
+    async getUserData(refresh = false) {
+      //if data has already been fetched
+      if (!refresh && this.user && this.user.userData) return this.user;
+
+      //fetch data
       const supabase = useSupabaseClient();
-      console.log(this.app_name);
       try {
         const { data, error: authError } = await supabase.auth.getUser();
         if (authError) throw authError;
@@ -135,6 +138,24 @@ export const useUserStore = defineStore("supabase", {
           this.user.userData = insertedData[0];
           return this.user;
         }
+      } catch (e) {
+        console.log(e.message);
+        this.error = e.message;
+        return null;
+      }
+    },
+    async updateUserData({ newtags = null } = {}) {
+      const supabase = useSupabaseClient();
+      const updatedTags = { ...this.user.userData.tags, ...newtags };
+      console.log(updatedTags);
+      try {
+        const { error: authError } = await supabase
+          .from(`${this.app_name}-userdata`)
+          .update({ tags: updatedTags })
+          .eq("id", this.user.id);
+        if (authError) throw authError;
+        this.user.userData = newData;
+        return this.user;
       } catch (e) {
         console.log(e.message);
         this.error = e.message;

@@ -1,6 +1,6 @@
 <template>
   <!-- header -->
-  <Toolbar class="border-none container mx-auto !bg-transparent">
+  <Toolbar class="border-none container mx-auto bg-transparent">
     <template #start>
       <nuxt-link to="/">
         <LogoComponent />

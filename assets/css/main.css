@@ -17,7 +17,90 @@
   --p-primary-950: #000000;
   --p-content-border-radius: 6px;
 
-  --p-surface-0: var(--p-primary-0);
+  /* slate palette */
+  --slate-0-rgb: 255, 255, 255;
+  --slate-50-rgb: 248, 250, 252;
+  --slate-100-rgb: 241, 245, 249;
+  --slate-200-rgb: 226, 232, 240;
+  --slate-300-rgb: 203, 213, 225;
+  --slate-400-rgb: 148, 163, 184;
+  --slate-500-rgb: 100, 116, 139;
+  --slate-600-rgb: 71, 85, 105;
+  --slate-700-rgb: 51, 65, 85;
+  --slate-800-rgb: 30, 41, 59;
+  --slate-900-rgb: 15, 23, 42;
+  --slate-950-rgb: 2, 6, 23;
+
+  --surface-0: var(--slate-0-rgb);
+  --surface-50: var(--slate-50-rgb);
+  --surface-100: var(--slate-100-rgb);
+  --surface-200: var(--slate-200-rgb);
+  --surface-300: var(--slate-300-rgb);
+  --surface-400: var(--slate-400-rgb);
+  --surface-500: var(--slate-500-rgb);
+  --surface-600: var(--slate-600-rgb);
+  --surface-700: var(--slate-700-rgb);
+  --surface-800: var(--slate-800-rgb);
+  --surface-900: var(--slate-900-rgb);
+  --surface-950: var(--slate-950-rgb);
+
+  /* zinc default palette */
+  /* --zinc-0-rgb: 255, 255, 255;
+  --zinc-50-rgb: 250, 250, 250;
+  --zinc-100-rgb: 244, 244, 245;
+  --zinc-200-rgb: 228, 228, 231;
+  --zinc-300-rgb: 212, 212, 216;
+  --zinc-400-rgb: 161, 161, 170;
+  --zinc-500-rgb: 113, 113, 122;
+  --zinc-600-rgb: 82, 82, 91;
+  --zinc-700-rgb: 63, 63, 70;
+  --zinc-800-rgb: 39, 39, 42;
+  --zinc-900-rgb: 24, 24, 27;
+  --zinc-950-rgb: 9, 9, 11;
+
+  /* zink contrast palette */
+
+  --zinc-0-rgb: 255, 255, 255;
+  --zinc-50-rgb: 255, 255, 255;
+  --zinc-100-rgb: 230, 230, 230;
+  --zinc-200-rgb: 204, 204, 204;
+  --zinc-300-rgb: 179, 179, 179;
+  --zinc-400-rgb: 153, 153, 153;
+  --zinc-500-rgb: 128, 128, 128;
+  --zinc-600-rgb: 102, 102, 102;
+  --zinc-700-rgb: 77, 77, 77;
+  --zinc-800-rgb: 51, 51, 51;
+  --zinc-900-rgb: 26, 26, 26;
+  --zinc-950-rgb: 0, 0, 0;
+
+  --surface-0: var(--zinc-0-rgb);
+  --surface-50: var(--zinc-50-rgb);
+  --surface-100: var(--zinc-100-rgb);
+  --surface-200: var(--zinc-200-rgb);
+  --surface-300: var(--zinc-300-rgb);
+  --surface-400: var(--zinc-400-rgb);
+  --surface-500: var(--zinc-500-rgb);
+  --surface-600: var(--zinc-600-rgb);
+  --surface-700: var(--zinc-700-rgb);
+  --surface-800: var(--zinc-800-rgb);
+  --surface-900: var(--zinc-900-rgb);
+  --surface-950: var(--zinc-950-rgb);
+
+  --p-surface-0: rgb(var(--surface-0));
+  --p-surface-50: rgb(var(--surface-50));
+  --p-surface-100: rgb(var(--surface-100));
+  --p-surface-200: rgb(var(--surface-200));
+  --p-surface-300: rgb(var(--surface-300));
+  --p-surface-400: rgb(var(--surface-400));
+  --p-surface-500: rgb(var(--surface-500));
+  --p-surface-600: rgb(var(--surface-600));
+  --p-surface-700: rgb(var(--surface-700));
+  --p-surface-800: rgb(var(--surface-800));
+  --p-surface-900: rgb(var(--surface-900));
+  --p-surface-950: rgb(var(--surface-950));
+
+  /* primary colors */
+  /* --p-surface-0: var(--p-primary-0);
   --p-surface-50: var(--p-primary-50);
   --p-surface-100: var(--p-primary-100);
   --p-surface-200: var(--p-primary-200);
@@ -28,7 +111,7 @@
   --p-surface-700: var(--p-primary-700);
   --p-surface-800: var(--p-primary-800);
   --p-surface-900: var(--p-primary-900);
-  --p-surface-950: var(--p-primary-950);
+  --p-surface-950: var(--p-primary-950); */
 }
 
 /* Light Mode */
@@ -49,19 +132,19 @@
   --p-text-muted-color: var(--p-surface-500);
   --p-text-hover-muted-color: var(--p-surface-600);
 
-  --background: 245, 245, 245;
-  --border: 212, 212, 212;
-  --card: 255, 255, 255;
-  --copy: 23, 23, 23;
-  --copy-secondary: 115, 115, 115;
-  --cta: 139, 92, 246;
-  --cta-active: 124, 58, 237;
-  --cta-text: 255, 255, 255;
+  --background: var(--surface-50);
+  --border: var(--surface-300);
+  --card: var(--surface-200);
+  --copy: var(--surface-950);
+  --copy-secondary: var(--surface-800);
+  --cta: var(--p-primary-400);
+  --cta-active: var(--p-primary-200);
+  --cta-text: var(--surface-0);
 }
 
 .dark {
   --p-primary-color: var(--p-primary-400);
-  --p-primary-contrast-color: var(--p-surface-900);
+  --p-primary-contrast-color: var(--p-surface-50);
   --p-primary-hover-color: var(--p-primary-300);
   --p-primary-active-color: var(--p-primary-200);
   --p-content-border-color: var(--p-surface-700);
@@ -84,13 +167,13 @@
   --p-text-muted-color: var(--p-surface-400);
   --p-text-hover-muted-color: var(--p-surface-300);
 
-  --background: 0, 0, 0;
-  --border: 38, 38, 38;
-  --card: 23, 23, 23;
-  --copy: 250, 250, 250;
-  --copy-secondary: 115, 115, 115;
-  --cta: 99, 102, 241;
-  --cta-active: 79, 70, 229;
-  --cta-text: 255, 255, 255;
+  --background: var(--surface-950);
+  --border: var(--surface-800);
+  --card: var(--surface-900);
+  --copy: var(--surface-50);
+  --copy-secondary: var(--surface-200);
+  --cta: var(--p-primary-500);
+  --cta-active: var(--p-primary-400);
+  --cta-text: var(--surface-0);
   background: rgba(var(--background));
 }

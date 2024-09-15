@@ -27,6 +27,7 @@
             label="Live Demo"
             type="button"
             class="p-button-outlined"
+            severity="secondary"
           ></Button>
         </section>
       </div>

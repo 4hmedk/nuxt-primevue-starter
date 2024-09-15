@@ -1,50 +1,55 @@
 <!-- components/slides/NameEmailSlide.vue -->
 <template>
   <div>
-    <h2 class="text-2xl font-bold mb-4">Personal Information</h2>
-    <Form @submit="onSubmit" :validation-schema="schema">
-      <div class="mb-4">
-        <label for="name" class="block text-sm font-medium text-gray-700"
-          >Name</label
-        >
-        <Field
-          name="name"
-          type="text"
-          id="name"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-        <ErrorMessage name="name" class="text-red-500 text-sm" />
+    <h2 class="text-2xl mb-4">Just some details</h2>
+    <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ errors }">
+      <div class="space-y-4">
+        <div>
+          <label for="name" class="block text-sm font-medium">Name</label>
+          <Field name="name" v-slot="{ field }">
+            <InputText
+              v-bind="field"
+              id="name"
+              class="mt-1 block w-full"
+              :invalid="errors.name"
+            />
+          </Field>
+          <small class="text-red-500">{{ errors.name }}</small>
+        </div>
+        <div>
+          <label for="email" class="block text-sm font-medium">Email</label>
+          <InputText
+            id="email"
+            class="mt-1 block w-full"
+            v-model="user.email"
+            :readonly="true"
+            :disabled="true"
+          />
+        </div>
+        <div class="w-full">
+          <Button type="submit" label="Submit" class="w-full mt-4" />
+        </div>
       </div>
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-medium text-gray-700"
-          >Email</label
-        >
-        <Field
-          name="email"
-          type="email"
-          id="email"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-        <ErrorMessage name="email" class="text-red-500 text-sm" />
-      </div>
-      <Button type="submit" label="Next" class="w-full" />
     </Form>
   </div>
 </template>
 
 <script setup>
 import * as Yup from "yup";
+import InputText from "primevue/inputtext";
 const userStore = useUserStore();
+const user = await userStore.getUserData();
 
 const schema = Yup.object({
   name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
+  // email: Yup.string().email("Invalid email").required("Email is required"),
 });
 
 const emit = defineEmits(["next"]);
 
-const onSubmit = (values) => {
-  userStore.updateUserData(values);
+const onSubmit = async (values) => {
+  console.log(values);
+  await userStore.updateUserData({ tags: values });
   emit("next");
 };
 </script>

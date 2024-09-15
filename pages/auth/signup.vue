@@ -1,22 +1,27 @@
-<!-- components/SignupCarousel.vue -->
 <template>
-  <div class="p-4">
+  <div class="container max-w-screen-lg mx-auto p-4">
     <!-- <component :is="SignupNameSlide" /> -->
     <Carousel
       :value="slides"
       :numVisible="1"
       :numScroll="1"
       :circular="false"
+      :showNavigators="false"
+      :showIndicators="false"
       @page-change="onPageChange"
     >
       <template #item="slotProps">
-        <div class="border p-4 rounded-lg shadow-md">
-          <component
-            :is="slotProps.data.component"
-            @next="nextSlide"
-            @prev="prevSlide"
-          />
-        </div>
+        <Card
+          class="mx-auto w-full max-w-screen-sm border border-border p-4 rounded-lg shadow-md"
+        >
+          <template #content>
+            <component
+              :is="slotProps.data.component"
+              @next="nextSlide"
+              @prev="prevSlide"
+            />
+          </template>
+        </Card>
       </template>
     </Carousel>
   </div>
