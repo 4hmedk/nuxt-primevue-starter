@@ -6,30 +6,36 @@
       :numVisible="1"
       :numScroll="1"
       :circular="false"
-      :showNavigators="false"
-      :showIndicators="false"
       @page-change="onPageChange"
+      class="w-full"
     >
       <template #item="slotProps">
-        <Card
-          class="mx-auto w-full max-w-screen-sm border border-border p-4 rounded-lg shadow-md"
-        >
-          <template #content>
-            <component
-              :is="slotProps.data.component"
-              @next="nextSlide"
-              @prev="prevSlide"
-            />
-          </template>
-        </Card>
+        <div class="w-full">
+          <Card
+            class="mx-auto w-full max-w-screen-sm border border-border p-4 rounded-lg shadow-md"
+          >
+            <template #content>
+              {{ slotProps.data.id }}
+              <component
+                :is="slotProps.data.component"
+                @next="nextSlide"
+                @prev="prevSlide"
+              />
+            </template>
+          </Card>
+        </div>
       </template>
     </Carousel>
   </div>
 </template>
 
 <script setup>
-import { SignupNameSlide } from "#components";
-const slides = ref([{ component: SignupNameSlide }]);
+import { SignupNameSlide, SignupNamePhone } from "#components";
+const slides = ref([
+  { id: 0, component: SignupNameSlide },
+  { id: 1, component: SignupNamePhone },
+  { id: 2, component: SignupNameSlide },
+]);
 
 const currentSlide = ref(0);
 

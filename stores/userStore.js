@@ -144,7 +144,7 @@ export const useUserStore = defineStore("supabase", {
         return null;
       }
     },
-    async updateUserData({ newtags = null } = {}) {
+    async updateUserData({ newtags = null, newSignupProgress = 0 } = {}) {
       const supabase = useSupabaseClient();
       const updatedTags = { ...this.user.userData.tags, ...newtags };
       console.log(updatedTags);
@@ -154,7 +154,7 @@ export const useUserStore = defineStore("supabase", {
           .update({ tags: updatedTags })
           .eq("id", this.user.id);
         if (authError) throw authError;
-        this.user.userData = newData;
+        this.user.userData.tags = updatedTags;
         return this.user;
       } catch (e) {
         console.log(e.message);

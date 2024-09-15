@@ -1,7 +1,7 @@
 <!-- components/slides/NameEmailSlide.vue -->
 <template>
   <div>
-    <h2 class="text-2xl mb-4">Just few steps away</h2>
+    <h2 class="text-2xl mb-4">Confirm your phone number</h2>
     <Form
       @submit="onSubmit"
       :initial-values="initialValues"
