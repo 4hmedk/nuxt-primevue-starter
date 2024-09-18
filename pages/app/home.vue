@@ -37,10 +37,28 @@
               <div class="text-blue-500">+12% from last month</div>
             </template>
           </Card>
+          <Button
+            label="Premium Feature"
+            icon="pi pi-bookmark"
+            @click="handlePremiumFeature"
+          />
         </div>
       </main>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { PlansDialog } from "#components";
+
+const userStore = useUserStore();
+
+const dialog = useDialog();
+
+async function handlePremiumFeature() {
+  //get user plan
+  await userStore.getUserData();
+
+  dialog.open(PlansDialog, {});
+}
+</script>

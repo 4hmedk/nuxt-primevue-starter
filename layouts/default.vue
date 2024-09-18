@@ -38,6 +38,7 @@
   </Toolbar>
   <slot></slot>
   <Toast />
+  <DynamicDialog />
 </template>
 
 <script setup>
@@ -75,9 +76,6 @@ const toggle = (event) => {
 };
 
 data.user_metadata = userStore.user?.user_metadata;
-
-const res = await useFetch("/api/hello");
-console.log(res.data);
 </script>
 
 <style scoped></style>

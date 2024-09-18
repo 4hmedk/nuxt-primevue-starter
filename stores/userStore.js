@@ -3,7 +3,7 @@ export const useUserStore = defineStore("supabase", {
     user: null,
     loading: false,
     error: null,
-    app_name: process.env.APP_NAME || "starter",
+    app_name: useRuntimeConfig().public.APP_NAME || "starter",
   }),
 
   getters: {
@@ -107,10 +107,10 @@ export const useUserStore = defineStore("supabase", {
         const { data, error: authError } = await supabase.auth.getUser();
         if (authError) throw authError;
         this.user = data.user;
-        console.log(this.user.id);
+        const query = `*, ${this.app_name}-plans(*)`;
         const { data: userData, e } = await supabase
           .from(`${this.app_name}-userdata`)
-          .select("*")
+          .select(query)
           .eq("id", this.user.id);
         if (e && e.code !== "PGRST116") {
           console.error("Error fetching user metadata:", e);

@@ -11,7 +11,6 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
       const userStore = useUserStore();
       const user = await userStore.getUserData();
 
-      console.log(user.userData.signup_progress);
       if (user.userData.signup_progress < 2) {
         return navigateTo("/auth/signup");
       }
