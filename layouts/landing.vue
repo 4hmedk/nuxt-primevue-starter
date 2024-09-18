@@ -75,15 +75,13 @@
         </template>
         <template #end>
           <div class="card mr-2 flex justify-center">
-            <template>
-              <div class="card flex justify-center">
-                <DarkmodeToggle />
-              </div>
-            </template>
+            <div class="card flex justify-center">
+              <DarkmodeToggle />
+            </div>
           </div>
-          <NuxtLink to="/app/home"
-            ><Button label="Go to app" class="*:text-cta"
-          /></NuxtLink>
+          <NuxtLink to="/app/home">
+            <Button label="Go to app" class="*:text-cta" />
+          </NuxtLink>
         </template>
       </Toolbar>
     </header>
