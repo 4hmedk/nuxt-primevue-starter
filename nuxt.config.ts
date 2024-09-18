@@ -17,6 +17,16 @@ export default defineNuxtConfig({
     },
     importPT: { as: 'Aura', from: '~/presets/aura' }     //import and apply preset
 },
+routeRules: {
+    '/': {prerender: true}  , // Homepage pre-rendered at build time
+    '/app/**': { ssr: false }, //render at build
+    '/auth/**': { ssr: false },//render at build
+},
+nitro: {
+  prerender: {
+    autoSubfolderIndex: false
+  }
+},
 css: ['~/assets/css/main.css'],
 colorMode: {
   preference: 'system', // default value of $colorMode.preference

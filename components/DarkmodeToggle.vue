@@ -1,11 +1,11 @@
 <template>
-  <ToggleButton
-    v-model="darkMode"
-    onLabel=" "
-    offLabel=" "
-    onIcon="pi pi-moon"
-    offIcon="pi pi-sun"
-    class="rounded-full border-none !bg-transparent before:!bg-transparent"
+  <Button
+    @click="darkMode = !darkMode"
+    :icon="darkMode ? 'pi pi-moon' : 'pi pi-sun'"
+    aria-label="Dark mode toggle"
+    severity="secondary"
+    text
+    rounded
   />
 </template>
 

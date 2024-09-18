@@ -132,14 +132,14 @@ const navItems = [
     label: "Home",
     route: "/",
   },
-  {
-    label: "Pricing",
-    route: "/pricing",
-  },
-  {
-    label: "Contact",
-    route: "/contact",
-  },
+  // {
+  //   label: "Pricing",
+  //   route: "/pricing",
+  // },
+  // {
+  //   label: "Contact",
+  //   route: "/contact",
+  // },
 ];
 </script>
 

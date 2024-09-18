@@ -33,7 +33,7 @@
       </div>
       <div class="col-span-12 md:col-span-6 overflow-hidden">
         <img
-          src="https://blocks.primevue.org/images/blocks/hero/hero-1.png"
+          src="~/assets/images/landing/pexels-knownasovan-57690.jpg"
           alt="Image"
           class="md:ml-auto block md:h-full"
           style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)"
