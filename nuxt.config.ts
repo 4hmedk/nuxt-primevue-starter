@@ -27,6 +27,15 @@ nitro: {
     autoSubfolderIndex: false
   }
 },
+runtimeConfig: {
+  //TODO: migrate env to here
+  // The private keys which are only available within server-side
+  apiSecret: '123',
+  // Keys within public, will be also exposed to the client-side
+  public: {
+    apiBase: '/api'
+  }
+},
 css: ['~/assets/css/main.css'],
 colorMode: {
   preference: 'system', // default value of $colorMode.preference

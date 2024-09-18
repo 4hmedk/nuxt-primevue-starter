@@ -135,8 +135,8 @@
   --background: var(--surface-50);
   --border: var(--surface-300);
   --card: var(--surface-200);
-  --copy: var(--surface-950);
-  --copy-secondary: var(--surface-800);
+  --copy: var(--surface-700);
+  --copy-secondary: var(--surface-500);
   --cta: var(--p-primary-400);
   --cta-active: var(--p-primary-200);
   --cta-text: var(--surface-0);
