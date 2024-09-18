@@ -4,6 +4,7 @@ import _ from "lodash";
 // import pixel from '~/lib/pixel.js';  // Adjust the path as necessary
 
 const dev = process.env.NODE_ENV === "development";
+const app_name = process.env.APP_NAME;
 
 const razorpay = new Razorpay({
   key_id: dev ? process.env.RAZORPAY_TEST_KEY_ID : process.env.RAZORPAY_KEY_ID,
@@ -29,7 +30,7 @@ const validateWebhookSignature = (req, res) => {
 const sb_create_plan = async (supabase, userId, type) => {
   try {
     const { data, error } = await supabase
-      .from(`plans`)
+      .from(`${app_name}-plans`)
       .insert({
         active: false,
         provider: "razorpay",
@@ -50,7 +51,7 @@ const sb_create_plan = async (supabase, userId, type) => {
 const sb_update_plan = async (supabase, userId, plan) => {
   try {
     const { data, error } = await supabase
-      .from("plans")
+      .from(`${app_name}-plans`)
       .update({
         active: plan.active,
         data: plan.data,
@@ -180,12 +181,13 @@ async function verifyOrder(event, supabase) {
   }
 }
 
-async function webhookUpdateSubscription(event, supabase) {
+async function webhookUpdateSubscription(event) {
   const body = await readBody(event);
   const rp_subscription = _.cloneDeep(body.payload.subscription.entity);
   rp_subscription.notes.src = "webhook";
 
   try {
+    const supabase = serverSupabaseServiceRole(event);
     const active = ["authenticated", "active"].includes(rp_subscription.status);
     const subscription = await sb_update_plan(
       supabase,
@@ -203,12 +205,13 @@ async function webhookUpdateSubscription(event, supabase) {
   }
 }
 
-async function webhookUpdateOrder(event, supabase) {
+async function webhookUpdateOrder(event) {
   const body = await readBody(event);
   const rp_order = _.cloneDeep(body.payload.order.entity);
   rp_order.notes.src = "webhook";
 
   try {
+    const supabase = serverSupabaseServiceRole(event);
     const active = ["paid", "attempted"].includes(rp_order.status);
     const order = await sb_update_plan(supabase, rp_order.notes.user_id, {
       data: rp_order,
@@ -260,12 +263,13 @@ async function createRefundHandler(event, supabase) {
   }
 }
 
-async function webhookUpdateRefund(event, supabase) {
+async function webhookUpdateRefund(event) {
   const body = await readBody(event);
   const rp_payment = body.payload.payment.entity;
   const rp_refund = body.payload.refund.entity;
 
   try {
+    const supabase = serverSupabaseServiceRole(event);
     const order = await sb_update_plan(supabase, rp_payment.notes.user_id, {
       id: rp_payment.notes.row_id,
       active: rp_refund.status === "processed",
@@ -296,14 +300,14 @@ export default defineEventHandler(async (event) => {
         return await verifyOrder(event, supabase);
       case "/api/payment/webhookUpdateSubscription":
         if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateSubscription(event, supabase);
+          return await webhookUpdateSubscription(event);
         }
         res.statusCode = 403;
         res.end("Invalid signature");
         break;
       case "/api/payment/webhookUpdateOrder":
         if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateOrder(event, supabase);
+          return await webhookUpdateOrder(event);
         }
         res.statusCode = 403;
         res.end("Invalid signature");
@@ -312,7 +316,7 @@ export default defineEventHandler(async (event) => {
         return await createRefund(event, supabase);
       case "/api/payment/webhookUpdateRefund":
         if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateRefund(event, supabase);
+          return await webhookUpdateRefund(event);
         }
         res.statusCode = 403;
         res.end("Invalid signature");
