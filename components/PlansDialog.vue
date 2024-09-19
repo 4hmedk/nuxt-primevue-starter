@@ -17,6 +17,10 @@
       class="w-full md:w-14rem"
     />
 
+    <div class="flex flex-row justify-between">
+      <p>Total:</p>
+      <p class="text-end">12x9999</p>
+    </div>
     <Button
       label="Subscribe"
       icon="pi pi-check"
@@ -29,6 +33,7 @@
 <script setup>
 const userStore = useUserStore();
 const runtimeConfig = useRuntimeConfig();
+const toast = useToast();
 
 const features = [
   "Access to premium content",
@@ -38,11 +43,11 @@ const features = [
 ];
 
 const plans = [
-  { name: "Monthly", price: 999, interval: "month" },
-  { name: "Yearly", price: 9999, interval: "year" },
+  { name: "Monthly", price: 99900, interval: "month" },
+  { name: "Yearly", price: 999900, interval: "year" },
 ];
 
-const selectedPlan = ref(null);
+const selectedPlan = ref(plans[1]);
 
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -64,11 +69,33 @@ const handleSubscribe = async () => {
     return;
   }
 
+  const sb_order = await $fetch("/api/razorpay/createOrder", {
+    method: "POST",
+    body: {
+      user_id: userStore.user.id,
+      duration: selectedPlan.value.interval === "month" ? 1 : 12,
+      jwt: useSupabaseSession().value.access_token,
+    },
+  });
+  const order = sb_order.order;
+
+  if (!order) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to create order",
+      life: 3000,
+    });
+    console.error("Failed to create order");
+    return;
+  }
+
   const options = {
     key: runtimeConfig.public.RAZORPAY_TEST_KEY_ID, // Replace with your actual Razorpay key
-    amount: selectedPlan.value.price,
-    currency: "INR",
-    name: "Your Company Name",
+    amount: order.data.amount,
+    order_id: order.data.id,
+    name: runtimeConfig.public.APP_TITLE,
+    description: "Annual Plan",
     description: `${selectedPlan.value.name} Premium Plan`,
     handler: function (response) {
       // Handle successful payment
@@ -85,6 +112,16 @@ const handleSubscribe = async () => {
   };
 
   const rzp = new Razorpay(options);
+  //add failure handler
+  rzp.on("payment.failed", function (response) {
+    console.log(response);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Payment Failed",
+      life: 3000,
+    });
+  });
   rzp.open();
 };
 </script>

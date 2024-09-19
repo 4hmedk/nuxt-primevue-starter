@@ -1,10 +1,14 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import _ from "lodash";
+import { createClient } from "@supabase/supabase-js";
+// import { useRuntimeConfig } from "#app";
+
 // import pixel from '~/lib/pixel.js';  // Adjust the path as necessary
 
 const dev = process.env.NODE_ENV === "development";
-const app_name = process.env.APP_NAME;
+const runtimeConfig = useRuntimeConfig();
+const app_name = runtimeConfig.public.APP_NAME;
 
 const razorpay = new Razorpay({
   key_id: dev ? process.env.RAZORPAY_TEST_KEY_ID : process.env.RAZORPAY_KEY_ID,
@@ -12,6 +16,23 @@ const razorpay = new Razorpay({
     ? process.env.RAZORPAY_TEST_KEY_SECRET
     : process.env.RAZORPAY_KEY_SECRET,
 });
+
+function createAuth(key) {
+  const supabaseUrl = runtimeConfig.public.SUPABASE_URL;
+  const supabaseKey = runtimeConfig.public.SUPABASE_KEY;
+  if (key.jwt) {
+    return createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: `Bearer ${key.jwt}` } },
+    });
+  } else if (key.signature) {
+    //signature has already been verified
+    //use service key
+    return createClient(supabaseUrl, process.env.SUPABASE_SERVICE_KEY);
+  } else {
+    console.error("no jwt or signature found");
+    return null;
+  }
+}
 
 // Validate Webhook Signature
 const validateWebhookSignature = (req, res) => {
@@ -66,7 +87,7 @@ const sb_update_plan = async (supabase, userId, plan) => {
   }
 };
 // Example function to create a subscription
-const createSubscription = async (event, supabase) => {
+export const createSubscription = async (event, supabase) => {
   const body = await readBody(event);
   const { user_id, jwt, plan_id, start_at } = body;
 
@@ -102,7 +123,7 @@ const createSubscription = async (event, supabase) => {
   }
 };
 
-async function updateSubscription(event, supabase) {
+export async function updateSubscription(event, supabase) {
   const body = await readBody(event);
   const { subscription, jwt } = body;
 
@@ -123,20 +144,29 @@ async function updateSubscription(event, supabase) {
   }
 }
 
-async function createOrder(event, supabase) {
+/**
+ * Creates a new order in Razorpay and saves it in the Supabase DB
+ * @param {import('http').IncomingMessage} event - The incoming HTTP request
+ * @param {import('@supabase/supabase-js').SupabaseClient} supabase - The Supabase client
+ * @returns {Promise<{ order: { id: string, data: any, active: boolean } } | { error: any }>} - The created order or an error
+ */
+/******  cd73e68f-76c4-4f11-9562-ac546879077f  *******/ export async function createOrder(
+  event,
+  supabase
+) {
   const body = await readBody(event);
   const { user_id, jwt, duration } = body;
-
   const sb_order = await sb_create_plan(supabase, user_id, "order");
+  console.log(sb_order);
   const expires_at = new Date(sb_order.created_at);
   expires_at.setMonth(expires_at.getMonth() + duration);
 
-  const amount = duration === 6 ? 6 * 59900 : duration * 49900;
+  const amount = 10000; //duration === 6 ? 6 * 59900 : duration * 49900;
 
   const params = {
     amount,
     currency: "INR",
-    receipt: `receipt_${user_id}`,
+    // receipt: `receipt_${user_id}`,
     notes: {
       user_id,
       row_id: sb_order.id,
@@ -152,6 +182,8 @@ async function createOrder(event, supabase) {
       data: response,
       id: sb_order.id,
     });
+    const res = event.node.res;
+    res.statusCode = 200;
     return { order: new_sb_order };
   } catch (error) {
     console.error(error);
@@ -159,7 +191,7 @@ async function createOrder(event, supabase) {
   }
 }
 
-async function verifyOrder(event, supabase) {
+export async function verifyOrder(event, supabase) {
   const body = await readBody(event);
   const { order, jwt } = body;
 
@@ -181,7 +213,7 @@ async function verifyOrder(event, supabase) {
   }
 }
 
-async function webhookUpdateSubscription(event) {
+export async function webhookUpdateSubscription(event) {
   const body = await readBody(event);
   const rp_subscription = _.cloneDeep(body.payload.subscription.entity);
   rp_subscription.notes.src = "webhook";
@@ -205,7 +237,7 @@ async function webhookUpdateSubscription(event) {
   }
 }
 
-async function webhookUpdateOrder(event) {
+export async function webhookUpdateOrder(event) {
   const body = await readBody(event);
   const rp_order = _.cloneDeep(body.payload.order.entity);
   rp_order.notes.src = "webhook";
@@ -225,7 +257,7 @@ async function webhookUpdateOrder(event) {
   }
 }
 
-async function createRefundHandler(event, supabase) {
+export async function createRefundHandler(event, supabase) {
   const body = await readBody(event);
   const { order, jwt } = body;
 
@@ -263,7 +295,7 @@ async function createRefundHandler(event, supabase) {
   }
 }
 
-async function webhookUpdateRefund(event) {
+export async function webhookUpdateRefund(event) {
   const body = await readBody(event);
   const rp_payment = body.payload.payment.entity;
   const rp_refund = body.payload.refund.entity;
@@ -286,15 +318,19 @@ export default defineEventHandler(async (event) => {
   const req = event.node.req;
   const res = event.node.res;
   const body = await readBody(event); // equivalent of `req.body`
-  const supabase = await serverSupabaseClient(event); // Get the Supabase client
 
+  const runtimeConfig = useRuntimeConfig();
+  const supabase = createAuth({ jwt: body.jwt });
+
+  const intent = getRouterParam(event, "intent");
   if (req.method === "POST") {
-    switch (req.url) {
+    switch (intent) {
       case "/api/payment/createSubscription":
         return await createSubscription(event, supabase);
       case "/api/payment/updateSubscription":
         return await updateSubscription(event, supabase);
-      case "/api/payment/createOrder":
+      case "createOrder":
+        console.log("creating order....");
         return await createOrder(event, supabase);
       case "/api/payment/verifyOrder":
         return await verifyOrder(event, supabase);

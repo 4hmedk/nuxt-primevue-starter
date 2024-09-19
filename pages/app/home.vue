@@ -59,6 +59,17 @@ async function handlePremiumFeature() {
   //get user plan
   await userStore.getUserData();
 
-  dialog.open(PlansDialog, {});
+  dialog.open(PlansDialog, {
+    props: {
+      header: "Select a plan",
+      style: {
+        width: "50vw",
+      },
+      breakpoints: {
+        "960px": "75vw",
+        "640px": "90vw",
+      },
+    },
+  });
 }
 </script>
