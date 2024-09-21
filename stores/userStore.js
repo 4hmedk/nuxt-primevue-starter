@@ -117,8 +117,13 @@ export const useUserStore = defineStore("supabase", {
           throw e;
         }
         if (userData[0]) {
-          // User exists, return the metadata
-          this.user.userData = userData[0];
+          // User exists,
+          //rename the plans field
+          const newUserData = userData[0];
+          newUserData["plans"] = newUserData[`${this.app_name}-plans`];
+          delete newUserData[`${this.app_name}-plans`];
+          // return the metadata
+          this.user.userData = newUserData;
           return this.user;
         } else {
           // User doesn't exist, create new entry

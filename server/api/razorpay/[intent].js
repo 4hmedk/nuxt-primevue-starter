@@ -69,7 +69,7 @@ const sb_create_plan = async (supabase, userId, type) => {
   }
 };
 
-const sb_update_plan = async (supabase, userId, plan) => {
+const sb_update_plan = async (supabase, plan) => {
   try {
     const { data, error } = await supabase
       .from(`${app_name}-plans`)
@@ -150,10 +150,7 @@ export async function updateSubscription(event, supabase) {
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase - The Supabase client
  * @returns {Promise<{ order: { id: string, data: any, active: boolean } } | { error: any }>} - The created order or an error
  */
-/******  cd73e68f-76c4-4f11-9562-ac546879077f  *******/ export async function createOrder(
-  event,
-  supabase
-) {
+export async function createOrder(event, supabase) {
   const body = await readBody(event);
   const { user_id, jwt, duration } = body;
   const sb_order = await sb_create_plan(supabase, user_id, "order");
@@ -177,11 +174,12 @@ export async function updateSubscription(event, supabase) {
 
   try {
     const response = await razorpay.orders.create(params);
-    const new_sb_order = await sb_update_plan(supabase, user_id, {
+    const new_sb_order = await sb_update_plan(supabase, {
       active: false,
       data: response,
       id: sb_order.id,
     });
+    console.log(new_sb_order);
     const res = event.node.res;
     res.statusCode = 200;
     return { order: new_sb_order };
@@ -191,22 +189,27 @@ export async function updateSubscription(event, supabase) {
   }
 }
 
+/**
+ * Gets Razorpay order object from Razorpay API for frontend use and also updates it on supabase
+ * @param {import('http').IncomingMessage} event - The incoming HTTP request
+ * @param {import('@supabase/supabase-js').SupabaseClient} supabase - The Supabase client
+ * @returns {Promise<{ order: any } | { error: any }>} - The verified order or an error
+ */
 export async function verifyOrder(event, supabase) {
   const body = await readBody(event);
-  const { order, jwt } = body;
+  const { rp_order_id, sb_order_id } = body;
+  console.log(sb_order_id);
+  let sb_order = {};
 
   try {
-    const rp_order = await razorpay.orders.fetch(order.data.id);
-    order.data = rp_order;
-    order.active = ["paid", "attempted"].includes(rp_order.status);
+    const rp_order = await razorpay.orders.fetch(rp_order_id);
+    sb_order.data = rp_order;
+    sb_order.active = ["paid", "attempted"].includes(rp_order.status);
+    sb_order.id = sb_order_id;
+    console.log(sb_order);
+    await sb_update_plan(supabase, sb_order);
 
-    await sb_update_plan(supabase, order.user_id, order);
-
-    if (rp_order.status === "paid") {
-      pixel.createFBConversionEvent(event, rp_order);
-    }
-
-    return { order };
+    return { order: sb_order };
   } catch (error) {
     console.error(error);
     return { error };
@@ -318,45 +321,46 @@ export default defineEventHandler(async (event) => {
   const req = event.node.req;
   const res = event.node.res;
   const body = await readBody(event); // equivalent of `req.body`
-
+  console.log(`${req.method}: ${req.url}`);
   const runtimeConfig = useRuntimeConfig();
   const supabase = createAuth({ jwt: body.jwt });
 
   const intent = getRouterParam(event, "intent");
   if (req.method === "POST") {
     switch (intent) {
-      case "/api/payment/createSubscription":
-        return await createSubscription(event, supabase);
-      case "/api/payment/updateSubscription":
-        return await updateSubscription(event, supabase);
+      // case "/api/payment/createSubscription":
+      //   return await createSubscription(event, supabase);
+      // case "/api/payment/updateSubscription":
+      //   return await updateSubscription(event, supabase);
       case "createOrder":
         console.log("creating order....");
         return await createOrder(event, supabase);
-      case "/api/payment/verifyOrder":
+
+      case "verifyOrder":
         return await verifyOrder(event, supabase);
-      case "/api/payment/webhookUpdateSubscription":
-        if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateSubscription(event);
-        }
-        res.statusCode = 403;
-        res.end("Invalid signature");
-        break;
-      case "/api/payment/webhookUpdateOrder":
-        if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateOrder(event);
-        }
-        res.statusCode = 403;
-        res.end("Invalid signature");
-        break;
-      case "/api/payment/createRefund":
-        return await createRefund(event, supabase);
-      case "/api/payment/webhookUpdateRefund":
-        if (validateWebhookSignature(req, res)) {
-          return await webhookUpdateRefund(event);
-        }
-        res.statusCode = 403;
-        res.end("Invalid signature");
-        break;
+      // case "/api/payment/webhookUpdateSubscription":
+      //   if (validateWebhookSignature(req, res)) {
+      //     return await webhookUpdateSubscription(event);
+      //   }
+      //   res.statusCode = 403;
+      //   res.end("Invalid signature");
+      //   break;
+      // case "/api/payment/webhookUpdateOrder":
+      //   if (validateWebhookSignature(req, res)) {
+      //     return await webhookUpdateOrder(event);
+      //   }
+      //   res.statusCode = 403;
+      //   res.end("Invalid signature");
+      //   break;
+      // case "/api/payment/createRefund":
+      //   return await createRefund(event, supabase);
+      // case "/api/payment/webhookUpdateRefund":
+      //   if (validateWebhookSignature(req, res)) {
+      //     return await webhookUpdateRefund(event);
+      //   }
+      //   res.statusCode = 403;
+      //   res.end("Invalid signature");
+      //   break;
       default:
         res.statusCode = 404;
         res.end("Route not found");

@@ -24,7 +24,8 @@
     <Button
       label="Subscribe"
       icon="pi pi-check"
-      @click="handleSubscribe"
+      @click="handlePaymentInit"
+      :loading="isLoading"
       :disabled="!selectedPlan"
     />
   </div>
@@ -34,6 +35,8 @@
 const userStore = useUserStore();
 const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
+
+const isLoading = ref(false);
 
 const features = [
   "Access to premium content",
@@ -59,17 +62,49 @@ const loadRazorpayScript = () => {
   });
 };
 
-const handleSubscribe = async () => {
-  if (!selectedPlan.value) return;
+async function verifyPayment(authenticationResponse, sb_order_id) {
+  console.log(authenticationResponse);
+  try {
+    const verifyOrderResponse = await $fetch("/api/razorpay/verifyOrder", {
+      method: "POST",
+      body: {
+        sb_order_id: sb_order_id,
+        rp_order_id: authenticationResponse.razorpay_order_id,
+        jwt: useSupabaseSession().value.access_token,
+      },
+    });
+    console.log(verifyOrderResponse);
+    const order = verifyOrderResponse.order;
+    //update local store
+    useUserStore().user.userData.plans.push(order);
 
-  const isLoaded = await loadRazorpayScript();
-  if (!isLoaded) {
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Payment details verified successfully",
+    });
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Payment details could not be verified, Please contact support",
+    });
+    console.log(error);
+  }
+}
+
+const handlePaymentInit = async () => {
+  if (!selectedPlan.value) return;
+  isLoading.value = true;
+
+  const isScriptLoaded = await loadRazorpayScript();
+  if (!isScriptLoaded) {
     console.error("Failed to load Razorpay SDK");
     isLoading.value = false;
     return;
   }
 
-  const sb_order = await $fetch("/api/razorpay/createOrder", {
+  const createOrderResponse = await $fetch("/api/razorpay/createOrder", {
     method: "POST",
     body: {
       user_id: userStore.user.id,
@@ -77,7 +112,8 @@ const handleSubscribe = async () => {
       jwt: useSupabaseSession().value.access_token,
     },
   });
-  const order = sb_order.order;
+  const order = createOrderResponse.order;
+  console.log(order);
 
   if (!order) {
     toast.add({
@@ -87,6 +123,7 @@ const handleSubscribe = async () => {
       life: 3000,
     });
     console.error("Failed to create order");
+    isLoading.value = false;
     return;
   }
 
@@ -97,10 +134,11 @@ const handleSubscribe = async () => {
     name: runtimeConfig.public.APP_TITLE,
     description: "Annual Plan",
     description: `${selectedPlan.value.name} Premium Plan`,
-    handler: function (response) {
+    handler: async function (authenticationResponse) {
       // Handle successful payment
-      console.log(response);
-      userStore.upgradeToPremium(selectedPlan.value);
+      console.log(authenticationResponse);
+      await verifyPayment(authenticationResponse, order.id);
+      isLoading.value = false;
     },
     prefill: {
       email: userStore.user.email,
@@ -115,6 +153,7 @@ const handleSubscribe = async () => {
   //add failure handler
   rzp.on("payment.failed", function (response) {
     console.log(response);
+    isLoading.value = false;
     toast.add({
       severity: "error",
       summary: "Error",

@@ -69,6 +69,7 @@ async function handlePremiumFeature() {
         "960px": "75vw",
         "640px": "90vw",
       },
+      modal: true,
     },
   });
 }
