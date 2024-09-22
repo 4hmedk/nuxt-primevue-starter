@@ -1,4 +1,4 @@
-export const useUserStore = defineStore("supabase", {
+export const useUserStore = defineStore("userStore", {
   state: () => ({
     user: null,
     loading: false,
