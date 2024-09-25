@@ -33,7 +33,8 @@ export default defineNuxtConfig({
     SUPABASE_SERVICE_KEY:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2dXlldHByendvenJhb2NkaWJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNTg1MDgyMSwiZXhwIjoyMDQxNDI2ODIxfQ.zY5pnpPIjAvv1mtXA7HC6JZ7uLWBztcmzLniScn87Tw",
     RAZORPAY_KEY_SECRET: "Ed8p4gu7onE8aElXBwt99yZ9",
-    RAZORPAY_TEST_KEY_SECRET: "CszR4iOLLABdiJfYNAABpwbH", // app specific
+    RAZORPAY_TEST_KEY_SECRET: "CszR4iOLLABdiJfYNAABpwbH",
+    // app specific
 
     // Keys within public, will be also exposed to the client-side
     public: {

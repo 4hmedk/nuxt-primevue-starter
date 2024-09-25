@@ -11,10 +11,12 @@ const runtimeConfig = useRuntimeConfig();
 const app_name = runtimeConfig.public.APP_NAME;
 
 const razorpay = new Razorpay({
-  key_id: dev ? process.env.RAZORPAY_TEST_KEY_ID : process.env.RAZORPAY_KEY_ID,
+  key_id: dev
+    ? runtimeConfig.public.RAZORPAY_TEST_KEY_ID
+    : runtimeConfig.public.RAZORPAY_KEY_ID,
   key_secret: dev
-    ? process.env.RAZORPAY_TEST_KEY_SECRET
-    : process.env.RAZORPAY_KEY_SECRET,
+    ? runtimeConfig.RAZORPAY_TEST_KEY_SECRET
+    : runtimeConfig.RAZORPAY_KEY_SECRET,
 });
 
 function createAuth(key) {
@@ -35,17 +37,17 @@ function createAuth(key) {
 }
 
 // Validate Webhook Signature
-const validateWebhookSignature = (req, res) => {
-  const secret = process.env.WEBHOOK_SECRET;
-  const hmac = crypto.createHmac("sha256", secret);
-  const signature = req.headers["x-razorpay-signature"];
-  const generatedSignature = hmac.update(req.rawBody).digest("hex");
+// const validateWebhookSignature = (req, res) => {
+//   const secret = process.env.WEBHOOK_SECRET;
+//   const hmac = crypto.createHmac("sha256", secret);
+//   const signature = req.headers["x-razorpay-signature"];
+//   const generatedSignature = hmac.update(req.rawBody).digest("hex");
 
-  if (signature === generatedSignature) {
-    return true;
-  }
-  return false;
-};
+//   if (signature === generatedSignature) {
+//     return true;
+//   }
+//   return false;
+// };
 
 // Supabase helper functions using `serverSupabaseClient`
 const sb_create_plan = async (supabase, userId, type) => {
