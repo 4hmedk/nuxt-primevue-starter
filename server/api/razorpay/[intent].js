@@ -169,6 +169,7 @@ export async function createOrder(event, supabase) {
       row_id: sb_order.id,
       duration,
       expires_at,
+      app_name: useRuntimeConfig().public.APP_NAME,
     },
   };
 

@@ -134,10 +134,10 @@ const navItems = [
   //   label: "Pricing",
   //   route: "/pricing",
   // },
-  // {
-  //   label: "Contact",
-  //   route: "/contact",
-  // },
+  {
+    label: "Contact",
+    route: "/contact",
+  },
 ];
 </script>
 

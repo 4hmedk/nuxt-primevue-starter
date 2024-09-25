@@ -14,6 +14,32 @@
 		"runOptions": {
 		  "runOn": "folderOpen"
 		}
-	  }
+	  },
+	  {
+        "label": "APP-BACKEND/NODEMON",
+        "type": "shell",
+        "command": "cd C:/files/projects/app-backend ;  nodemon ./server.js",
+        "presentation": {
+          "reveal": "silent",
+          "panel": "new"
+        },
+        "runOptions": {
+          "runOn": "folderOpen"
+        },
+        "group": "test"
+      },
+	  {
+        "label": "BAKCEND/NGROCK-TUNNEL",
+        "type": "shell",
+        "command": "ngrok http --domain=flowing-boar-mainly.ngrok-free.app 80",
+        "presentation": {
+          "reveal": "silent",
+          "panel": "new"
+        },
+        "runOptions": {
+          "runOn": "folderOpen"
+        },
+        "group": "test"
+      }
 	]
   }
