@@ -181,7 +181,11 @@ const purchases = ref([]);
 
 onMounted(async () => {
   purchases.value = await userStore.user.userData.plans;
-  console.log(colorMode.preference);
+  //sort purchases by date
+  purchases.value.sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   theme.value = themeOptions.filter(
     (option) => option.value == colorMode.preference
   )[0];
