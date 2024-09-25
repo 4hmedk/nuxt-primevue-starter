@@ -128,7 +128,10 @@ const handlePaymentInit = async () => {
   }
 
   const options = {
-    key: runtimeConfig.public.RAZORPAY_TEST_KEY_ID, // Replace with your actual Razorpay key
+    key:
+      process.env.NODE_ENV === "development"
+        ? runtimeConfig.public.RAZORPAY_TEST_KEY_ID
+        : runtimeConfig.public.RAZORPAY_KEY_ID, // Replace with your actual Razorpay key
     amount: order.data.amount,
     order_id: order.data.id,
     name: runtimeConfig.public.APP_TITLE,
