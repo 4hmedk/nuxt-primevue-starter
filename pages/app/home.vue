@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <div>
     <div class="container mx-auto">
       <!-- Main Content -->
       <main class="flex-1 p-8">
@@ -9,7 +9,7 @@
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card class="shadow-md">
+          <Card class="shadow-md" v-for="i in 20" :key="i">
             <template #title>Total Users</template>
             <template #content>
               <div class="text-4xl font-bold">1,234</div>

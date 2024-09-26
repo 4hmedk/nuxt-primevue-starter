@@ -1,10 +1,10 @@
 <template>
   <div class="flex h-screen">
-    <!-- Sidebar -->
+    <!-- Desktop Sidebar -->
     <aside
       :class="[
         { 'w-64': isExpanded, 'w-[70px]': !isExpanded },
-        'bg-primary-500 text-copy transition-all duration-300 ease-in-out h-screen overflow-hidden',
+        'bg-primary-500 text-copy transition-all duration-300 ease-in-out h-screen overflow-hidden hidden md:block',
       ]"
     >
       <div class="flex flex-col h-full w-64 p-4">
@@ -39,7 +39,9 @@
     <!-- header and main -->
     <main class="flex-1 flex flex-col overflow-hidden">
       <!-- header -->
-      <Toolbar class="border-none w-full mx-auto !bg-transparent">
+      <Toolbar
+        class="border-none w-full mx-auto hidden md:block !bg-transparent"
+      >
         <template #start>
           <!-- Expand button -->
           <Button
@@ -107,7 +109,42 @@
         </template>
       </Toolbar>
       <!-- page container -->
-      <slot class="flex-1 overflow-x-hidden overflow-y-auto p-4"></slot>
+      <div class="flex-1 overflow-x-hidden overflow-y-auto">
+        <slot></slot>
+      </div>
+      <!-- Mobile bottom navigation -->
+      <Toolbar
+        class="border-none w-full mx-auto block md:hidden !bg-transparent"
+      >
+        <template #center>
+          <div class="flex flex-row text-copy gap-8">
+            <NuxtLink
+              v-for="tab in routerTabs"
+              :key="tab.label"
+              :to="tab.route"
+              active-class="text-primary"
+            >
+              <Button
+                :icon="tab.icon"
+                text
+                rounded
+                class="!text-inherit focus:!outline-none"
+                :pt="{ root: ['focus:outline-none'] }"
+                :ptOptions="{ mergeProps: true }"
+              />
+            </NuxtLink>
+            <Button
+              icon="pi pi-user"
+              class="!bg-transparent border-none"
+              @click="openUserMenu"
+              aria-haspopup="true"
+              aria-controls="overlay_menu"
+              severity="secondary"
+            />
+          </div>
+        </template>
+        <template #end> </template>
+      </Toolbar>
     </main>
     <DynamicDialog />
   </div>
