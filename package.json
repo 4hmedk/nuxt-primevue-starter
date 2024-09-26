@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@nuxtjs/color-mode": "^3.4.4",
-    "@primevue/nuxt-module": "^4.0.5"
+    "@primevue/nuxt-module": "^4.0.5",
+    "sass-embedded": "^1.79.3"
   }
 }
