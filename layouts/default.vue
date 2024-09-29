@@ -79,6 +79,7 @@
         <template #end>
           <DarkmodeToggle />
           <!-- <NuxtLink to="/app/profile"></NuxtLink> -->
+
           <Button
             icon="pi pi-user"
             class="!bg-transparent border-none"

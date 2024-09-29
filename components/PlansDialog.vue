@@ -9,6 +9,12 @@
       <span>{{ feature }}</span>
     </div>
 
+    <Select
+      v-model="selectedProvider"
+      :options="['razorpay', 'lemonsqueezy']"
+      class="w-full md:w-14rem"
+    />
+
     <Dropdown
       v-model="selectedPlan"
       :options="plans"
@@ -35,7 +41,6 @@
 const userStore = useUserStore();
 const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
-
 const isLoading = ref(false);
 
 const features = [
@@ -51,15 +56,26 @@ const plans = [
 ];
 
 const selectedPlan = ref(plans[1]);
+const selectedProvider = ref("lemonsqueezy");
 
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
+const loadpaymentScript = (provider) => {
+  if (provider === "razorpay") {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  } else {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://app.lemonsqueezy.com/js/lemon.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  }
 };
 
 async function verifyPayment(authenticationResponse, sb_order_id) {
@@ -97,7 +113,17 @@ const handlePaymentInit = async () => {
   if (!selectedPlan.value) return;
   isLoading.value = true;
 
-  const isScriptLoaded = await loadRazorpayScript();
+  if (selectedProvider.value === "razorpay") {
+    await handleRazorpayPayment();
+    return;
+  } else {
+    await handleLemonSqueezyPayment();
+  }
+  isLoading.value = false;
+};
+
+const handleRazorpayPayment = async () => {
+  const isScriptLoaded = await loadpaymentScript("razorpay");
   if (!isScriptLoaded) {
     console.error("Failed to load Razorpay SDK");
     isLoading.value = false;
@@ -166,6 +192,43 @@ const handlePaymentInit = async () => {
   });
   rzp.open();
 };
+
+const handleLemonSqueezyPayment = async () => {
+  const isScriptLoaded = await loadpaymentScript("lemonsqueezy");
+  if (!isScriptLoaded) {
+    console.error("Failed to load lemonsqueezy SDK");
+    isLoading.value = false;
+    return;
+  }
+
+  const createOrderResponse = await $fetch("/api/lemonsqueezy/createCheckout", {
+    method: "POST",
+    body: {
+      user_id: userStore.user.id,
+      duration: selectedPlan.value.interval === "month" ? 1 : 12,
+      jwt: useSupabaseSession().value.access_token,
+    },
+  });
+  console.log(createOrderResponse);
+
+  if (!createOrderResponse.order) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to create order",
+      life: 3000,
+    });
+    console.error("Failed to create order");
+    isLoading.value = false;
+    return;
+  }
+
+  const checkoutUrl = createOrderResponse["order"]["data"]["attributes"]["url"];
+  console.log(checkoutUrl);
+  window.createLemonSqueezy();
+  LemonSqueezy.Url.Open(checkoutUrl);
+};
+onMounted(() => {});
 </script>
 
 <style lang="scss" scoped></style>

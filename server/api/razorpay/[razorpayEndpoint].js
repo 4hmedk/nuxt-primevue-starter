@@ -328,7 +328,7 @@ export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig();
   const supabase = createAuth({ jwt: body.jwt });
 
-  const intent = getRouterParam(event, "intent");
+  const intent = getRouterParam(event, "razorpayEndpoint");
   if (req.method === "POST") {
     switch (intent) {
       // case "/api/payment/createSubscription":
