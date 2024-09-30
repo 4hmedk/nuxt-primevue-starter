@@ -29,7 +29,7 @@ function createAuth(key) {
   } else if (key.signature) {
     //signature has already been verified
     //use service key
-    return createClient(supabaseUrl, process.env.SUPABASE_SERVICE_KEY);
+    return createClient(supabaseUrl, runtimeConfig.SUPABASE_SERVICE_KEY);
   } else {
     console.error("no jwt or signature found");
     return null;

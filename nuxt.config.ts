@@ -50,6 +50,7 @@ export default defineNuxtConfig({
       APP_NAME: "starter",
       APP_TITLE: "Starter",
       LEMONSQUEEZY_TEST_STORE_ID: "125988",
+      BASE_URL: process.env.BASE_URL || "http://localhost:3000",
     },
   },
 

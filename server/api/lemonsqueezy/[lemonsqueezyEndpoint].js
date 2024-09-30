@@ -7,16 +7,19 @@ const lemonSqueezyApiKey = runtimeConfig.LEMONSQUEEZY_API_TEST_KEY_1;
 const lemonSqueezyStoreId = runtimeConfig.public.LEMONSQUEEZY_TEST_STORE_ID;
 const lemonSqueezyWebhookSecret = runtimeConfig.LEMONSQUEEZY_WEBHOOK_SECRET;
 
-function createSupabaseClient(jwt) {
+function createSupabaseClient(key) {
   const supabaseUrl = runtimeConfig.public.SUPABASE_URL;
   const supabaseKey = runtimeConfig.public.SUPABASE_KEY;
-
-  if (jwt) {
+  if (key.jwt) {
     return createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: `Bearer ${jwt}` } },
+      global: { headers: { Authorization: `Bearer ${key.jwt}` } },
     });
+  } else if (key.signature) {
+    //signature has already been verified
+    //use service key
+    return createClient(supabaseUrl, runtimeConfig.SUPABASE_SERVICE_KEY);
   } else {
-    console.error("No JWT found");
+    console.error("no jwt or signature found");
     return null;
   }
 }
@@ -53,6 +56,7 @@ const sbUpdatePlan = async (supabase, plan) => {
       .eq("id", plan.id)
       .select();
     if (error) throw error;
+    console.log("updated plan:", data[0]);
     return data[0];
   } catch (error) {
     console.error(error.message);
@@ -62,8 +66,8 @@ const sbUpdatePlan = async (supabase, plan) => {
 
 const createCheckout = async (event) => {
   const body = await readBody(event);
-  const { user_id, jwt, variant_id } = body;
-  const supabase = createSupabaseClient(jwt);
+  const { user_id, jwt, email, full_name } = body;
+  const supabase = createSupabaseClient({ jwt: jwt });
 
   const sbOrder = await sbCreatePlan(supabase, user_id, "order");
 
@@ -91,6 +95,25 @@ const createCheckout = async (event) => {
             },
           },
         },
+        attributes: {
+          product_options: {
+            redirect_url: `${runtimeConfig.public.BASE_URL}/app/home`,
+          },
+          checkout_options: {
+            embed: true,
+            dark: true,
+            logo: false,
+            button_color: "#111",
+          },
+          checkout_data: {
+            email: email,
+            name: full_name,
+            custom: {
+              user_id: user_id.toString(),
+              row_id: sbOrder.id.toString(),
+            },
+          },
+        },
       },
     },
   }).catch((error) => {
@@ -108,36 +131,39 @@ const createCheckout = async (event) => {
   return { order: updatedOrder };
 };
 
-const verifyWebhookSignature = (body, signature) => {
+const verifyWebhookSignature = (rawBody, signature) => {
+  // console.log(lemonSqueezyWebhookSecret);
+  // console.log(rawBody);
   const hmac = crypto.createHmac("sha256", lemonSqueezyWebhookSecret);
-  const digest = hmac.update(JSON.stringify(body)).digest("hex");
+  const digest = hmac.update(rawBody).digest("hex");
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
 };
 
 const handleWebhook = async (event) => {
   const body = await readBody(event);
+  const rawBody = await readRawBody(event);
   const signature = event.node.req.headers["x-signature"];
 
-  if (!verifyWebhookSignature(body, signature)) {
+  if (!verifyWebhookSignature(rawBody, signature)) {
     throw createError({ statusCode: 403, statusMessage: "Invalid signature" });
   }
 
   const { meta, data } = body;
-  const customData = data.attributes.custom_data;
-  const supabase = createSupabaseClient(null); // Use appropriate authentication method
+  const customData = meta.custom_data;
+  const supabase = createSupabaseClient({ signature: signature }); // Use appropriate authentication method
 
   switch (meta.event_name) {
     case "order_created":
       await sbUpdatePlan(supabase, {
-        id: customData.order_id,
-        active: false,
+        id: customData.row_id,
+        active: data.attributes.status === "paid",
         data: data,
       });
       break;
-    case "order_paid":
+    case "order_refunded":
       await sbUpdatePlan(supabase, {
-        id: customData.order_id,
-        active: true,
+        id: customData.row_id,
+        active: false,
         data: data,
       });
       break;
@@ -148,10 +174,11 @@ const handleWebhook = async (event) => {
 };
 
 export default defineEventHandler(async (event) => {
-  console.log("hello");
   const endpoint = getRouterParam(event, "lemonsqueezyEndpoint");
 
   switch (endpoint) {
+    case "hello":
+      return { hello: "world" };
     case "createCheckout":
       return await createCheckout(event);
     case "webhook":

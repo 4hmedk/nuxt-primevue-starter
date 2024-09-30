@@ -205,8 +205,9 @@ const handleLemonSqueezyPayment = async () => {
     method: "POST",
     body: {
       user_id: userStore.user.id,
-      duration: selectedPlan.value.interval === "month" ? 1 : 12,
+      email: userStore.user.email,
       jwt: useSupabaseSession().value.access_token,
+      full_name: userStore.user.user_metadata.full_name,
     },
   });
   console.log(createOrderResponse);
