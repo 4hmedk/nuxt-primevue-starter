@@ -40,7 +40,7 @@
     <main class="flex-1 flex flex-col overflow-hidden">
       <!-- header -->
       <Toolbar
-        class="border-none w-full mx-auto hidden md:block !bg-transparent"
+        class="border-none w-full mx-auto hidden md:flex !bg-transparent"
       >
         <template #start>
           <!-- Expand button -->
